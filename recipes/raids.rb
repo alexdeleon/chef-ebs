@@ -55,12 +55,10 @@ node[:ebs][:raids].each do |raid_device, options|
     action :create
   end
 
-  ruby_block "wait for devices" do
-    block do
-      Chef::Log.info("Waiting for individual disks of RAID #{options[:mount_point]}")
-      options[:disks].each do |disk_device|
-        BlockDevice::wait_for(disk_device)
-      end
+  Chef::Log.info("Waiting for individual disks of RAID #{options[:mount_point]}")
+  options[:disks].each do |disk_device|
+    ruby_block "wait_for #{disk_device}" do
+      BlockDevice::wait_for(disk_device)
     end
   end
 

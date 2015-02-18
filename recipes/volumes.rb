@@ -1,8 +1,8 @@
 node[:ebs][:volumes].each do |mount_point, options|
-  
+
   # skip volumes that already exist
   next if File.read('/etc/mtab').split("\n").any?{|line| line.match(" #{mount_point} ")}
-  
+
   # create ebs volume
   if !options[:device] && options[:size]
     if node[:ebs][:creds][:encrypted]
@@ -14,7 +14,12 @@ node[:ebs][:volumes].each do |mount_point, options|
     devices = Dir.glob('/dev/xvd?')
     devices = ['/dev/xvdf'] if devices.empty?
     devid = devices.sort.last[-1,1].succ
-    devid = 'f' unless devid >= 'f'
+    # due to error: Invalid value '/dev/sdc' for unixDevice. Attachment point /dev/sdc is already in use
+    if node["platform"] == "ubuntu"
+      if devid == "c"
+        devid = devid.succ
+      end
+    end
     device = "/dev/sd#{devid}"
 
     vol = aws_ebs_volume device do
