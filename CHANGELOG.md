@@ -1,3 +1,5 @@
+## v0.4.0
+- Freeze aws cookbook version to 2.6.0
 ## v0.3.5
 - Refactored code and added dependency on delayed_evaluator to fix a bug that
   prevented the proper device name from being used which was introduced with the
