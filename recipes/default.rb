@@ -23,7 +23,7 @@ if BlockDevice.on_kvm?
     owner "root"
     mode 0644
   end
-  
+
   execute "Reload udev rules" do
     command "udevadm control --reload-rules"
   end
@@ -34,17 +34,25 @@ if BlockDevice.on_kvm?
 
 end
 
-groups = node[:ebs][:groups]
-unless groups.nil? 
-  groups.each do | groupId|
-    unless node[:ebs][groupId].nil? || node[:ebs][groupId].empty? 
-      Chef::Log.info "Attaching EBS(s) from group #{groupId}"
-      group = node[:ebs][groupId]
-      node.force_override[:ebs][:raids] = node[:ebs][:raids].merge(group[:raids]) unless group[:raids].nil?
-      node.force_override[:ebs][:volumes] = node[:ebs][:volumes].merge(group[:volumes]) unless group[:volumes].nil?
+ruby_block 'configure_groups' do
+  block do
+    groups = node[:ebs][:groups]
+    Chef::Log.debug "Groups = #{groups}"
+    unless groups.nil?
+      groups.each do | groupId|
+        unless node[:ebs][groupId].nil? || node[:ebs][groupId].empty?
+          Chef::Log.info "Attaching EBS(s) from group #{groupId}"
+          group = node[:ebs][groupId]
+          Chef::Log.debug "Group = #{group}"
+          node.override[:ebs][:raids] = node[:ebs][:raids].merge(group[:raids]) unless group[:raids].nil?
+          node.override[:ebs][:volumes] = node[:ebs][:volumes].merge(group[:volumes]) unless group[:volumes].nil?
+        end
+      end
     end
+    Chef::Log.info "EBS volumes #{node[:ebs][:volumes]}"
+    Chef::Log.info "EBS raids #{node[:ebs][:raids]}"
+    run_context.include_recipe "ebs::volumes" unless node[:ebs][:volumes].empty?
+    run_context.include_recipe "ebs::raids" unless node[:ebs][:raids].empty?
   end
+  action :run
 end
-
-include_recipe "ebs::volumes" unless node[:ebs][:volumes].empty?
-include_recipe "ebs::raids" unless node[:ebs][:raids].empty?
