@@ -71,6 +71,7 @@ Create a 10GB volume with 1000 provisioned iops, format it with XFS, and mount i
         :piops => 1000,
         :fstype => 'xfs',
         :mount_options => 'noatime'
+        :delete_on_termination => true
       }
     }
   }
