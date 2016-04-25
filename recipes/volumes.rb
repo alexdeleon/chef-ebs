@@ -29,7 +29,7 @@ node[:ebs][:volumes].each do |mount_point, options|
       device device
       availability_zone node[:ec2][:placement_availability_zone]
       delete_on_termination options[:delete_on_termination] ? options[:delete_on_termination] : true
-      volume_type options[:piops] ? 'io1' : 'standard'
+      volume_type options[:volume_type] ? options[:volume_type] : 'standard'
       piops options[:piops]
       action :nothing
     end
