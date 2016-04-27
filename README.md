@@ -80,6 +80,25 @@ Create a 10GB volume with 1000 provisioned iops, format it with XFS, and mount i
 
 `mount_options` are optional and will default to `noatime,nobootwait` on all platforms except Amazon linux, where they will default to `noatime`.
 
+Now, from v0.4.1, you can also provision general purpose SSD volumes ('gp2'), with the new `volume_type` option:
+```ruby
+{
+  :ebs => {
+    :volumes => {
+      '/data' => {
+        :size => 10,
+        :volume_type => 'gp2',
+        :fstype => 'xfs',
+        :mount_options => 'noatime',
+        :delete_on_termination => true
+      }
+    }
+  }
+}
+```
+
+By default, it will take 'standard'.
+
 ## Credentials
 
 Expects a `credentials` databag with an `aws` item that contains `aws_access_key_id` and `aws_secret_access_key`.

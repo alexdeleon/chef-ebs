@@ -1,3 +1,7 @@
+## v0.4.1
+- Added volume_type configuration, which enables the possibility to choose from
+  'io1', 'standard' and now, also, 'gp2'.
+
 ## v0.4.0
 - Resolve problems in ubuntu distributions.
 ## v0.4.0
